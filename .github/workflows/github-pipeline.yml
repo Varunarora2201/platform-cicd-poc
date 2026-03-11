@@ -5,4 +5,4 @@ on:
 
 jobs:
   run-pipeline:
-    uses: ./.github/workflows/orchestration/dotnet-reusable.yml
+    uses: .github/workflows/orchestration/dotnet-reusable.yml
