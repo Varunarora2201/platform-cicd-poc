@@ -6,7 +6,7 @@ on:
 jobs:
 
   build:
-    uses: ./.github/workflows/build-dotnet.yml
+    uses: .github/workflows/build-dotnet.yml
 
   dependency-scan:
     needs: build
