@@ -1,0 +1,33 @@
+name: Dotnet CI Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    uses: ./.github/workflows/build-dotnet.yml
+
+  dependency-scan:
+    needs: build
+    uses: ./.github/workflows/dependency-vulnerability-scan.yml
+
+  static-scan:
+    needs: build
+    uses: ./.github/workflows/static-code-scan.yml
+
+  test:
+    needs: build
+    uses: ./.github/workflows/unit-tests.yml
+
+  docker-build:
+    needs: [test, static-scan]
+    uses: ./.github/workflows/docker-build.yml
+
+  container-scan:
+    needs: docker-build
+    uses: ./.github/workflows/container-scan.yml
+
+  deploy:
+    needs: container-scan
+    uses: ./.github/workflows/deploy-aca.yml

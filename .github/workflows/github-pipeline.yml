@@ -1,8 +1,0 @@
-name: Dotnet CI Pipeline
-
-on:
-  workflow_call:
-
-jobs:
-  build:
-    uses: ./.github/workflows/build/build-dotnet.yml
