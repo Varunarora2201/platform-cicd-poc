@@ -87,23 +87,17 @@ jobs:
 
 
   docker-build:
-    name: Docker Build
+    name: Docker Build & Scan
     needs: [unit-tests, static-code-scan]
     runs-on: ubuntu-latest
 
     steps:
+
       - uses: actions/checkout@v4
 
       - name: Build Docker Image
         run: docker build -t poc-dotnet-app .
 
-
-  container-scan:
-    name: Container Security Scan
-    needs: docker-build
-    runs-on: ubuntu-latest
-
-    steps:
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@master
         with:
