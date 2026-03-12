@@ -86,6 +86,8 @@ jobs:
     name: Static Code Analysis By SonarCloud
     needs: build-artifact
     uses: ./.github/workflows/static-code-scan.yml
+    secrets:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
   unit-tests:
