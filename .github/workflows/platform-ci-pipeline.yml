@@ -12,43 +12,66 @@ jobs:
 
   checkout:
     name: Checkout
-    uses: ./.github/workflows/checkout.yml
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
 
   credential-scan:
     name: Credentials scanning
+    runs-on: ubuntu-latest
     needs: checkout
-    uses: ./.github/workflows/credentials-scan.yml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/credential-scan
 
 
   dependency-scan:
     name: Dependency Vulnerability Scanning
+    runs-on: ubuntu-latest
     needs: checkout
-    uses: ./.github/workflows/dependency-vulnerability-scan.yml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/dependency-scan
 
 
   build-artifact:
     name: Build Artifact
-    needs: [dependency-scan,credential-scan]
-    uses: ./.github/workflows/build-dotnet.yml
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, credential-scan]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/build
 
 
   static-code-analysis:
     name: Static Code Analysis
+    runs-on: ubuntu-latest
     needs: build-artifact
-    uses: ./.github/workflows/static-code-scan.yml
-    secrets:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/security
+        with:
+          sonar-org: ${{ vars.SONAR_ORG }}
+          sonar-project: ${{ vars.SONAR_PROJECT }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
   unit-tests:
     name: Unit Testing
+    runs-on: ubuntu-latest
     needs: static-code-analysis
-    uses: ./.github/workflows/unit-test.yml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/unit-test
 
-# Performing Build, scan and push on same stage as we have to use the same runner.
+
+# Performing build and scan on same runner
   docker-build-scan-push:
     name: Docker Build, Scan and Push
+    runs-on: ubuntu-latest
     needs: unit-tests
-    uses: ./.github/workflows/docker-build-scan-push.yml
-      
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/container

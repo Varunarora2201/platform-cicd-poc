@@ -1,0 +1,11 @@
+name: Credential Scan
+description: Scan repository for exposed secrets
+
+runs:
+  using: composite
+  steps:
+
+    - name: Run TruffleHog
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: .

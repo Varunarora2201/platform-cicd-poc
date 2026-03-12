@@ -1,13 +1,7 @@
 name: Build Artifact
-
-on:
-  workflow_call:
-
-jobs:
-  build-artifact:
-    runs-on: ubuntu-latest
-
-    steps:
+runs:
+  using: composite
+  steps:
       - uses: actions/checkout@v4
 
       - name: Setup Dotnet

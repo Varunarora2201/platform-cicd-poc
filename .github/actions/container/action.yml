@@ -1,0 +1,15 @@
+name: Docker Build and Scan
+description: Build container image and scan it for vulnerabilities
+
+runs:
+  using: composite
+  steps:
+
+    - name: Build Docker Image
+      run: docker build -t poc-dotnet-app .
+      shell: bash
+
+    - name: Scan Docker Image
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: poc-dotnet-app

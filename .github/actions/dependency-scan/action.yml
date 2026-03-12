@@ -1,0 +1,12 @@
+name: Dependency Vulnerability Scan
+description: Scan project dependencies using Trivy
+
+runs:
+  using: composite
+  steps:
+
+    - name: Run Trivy filesystem scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: fs
+        scan-ref: .
