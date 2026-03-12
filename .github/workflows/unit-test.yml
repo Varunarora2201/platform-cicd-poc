@@ -4,10 +4,7 @@ on:
   workflow_call:
 
 jobs:
-
   unit-tests:
-    name: Unit Testing
-    needs: static-code-analysis
     runs-on: ubuntu-latest
 
     steps:

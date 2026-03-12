@@ -6,8 +6,6 @@ on:
 jobs:
 # Performing Build, scan and push on same stage as we have to use the same runner.
   docker-build-scan-push:
-    name: Docker Build, Scan and Push
-    needs: unit-tests
     runs-on: ubuntu-latest
 
     steps:
