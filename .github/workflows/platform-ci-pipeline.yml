@@ -12,80 +12,31 @@ jobs:
 
   checkout:
     name: Checkout
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    uses: ./.github/workflows/checkout.yml
 
 
   credential-scan:
     name: Credentials scanning
     needs: checkout
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Secret Scan (TruffleHog)
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: .
+    uses: ./.github/workflows/credentials-scan.yml
 
 
   dependency-scan:
     name: Dependency Vulnerability Scanning
     needs: checkout
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Dependency Vulnerability Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: fs
-          scan-ref: .
+    uses: ./.github/workflows/dependency-vulnerability-scan.yml
 
 
   build-artifact:
     name: Build Artifact
     needs: [dependency-scan,credential-scan]
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/build-dotnet.yml
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Dotnet
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 7.0.x
-
-      - name: Restore Dependencies
-        run: dotnet restore src/hello-world-api
-
-      - name: Build Application
-        run: dotnet build src/hello-world-api --no-restore
-
-
-  # static-code-analysis:
-  #   name: Static Code Analysis
-  #   needs: build-artifact
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     - name: Initialize CodeQL
-  #       uses: github/codeql-action/init@v3
-  #       with:
-  #         languages: csharp
-
-  #     - name: Autobuild
-  #       uses: github/codeql-action/autobuild@v3
-
-  #     - name: CodeQL Analysis
-  #       uses: github/codeql-action/analyze@v3
 
   static-code-analysis:
-    name: Static Code Analysis By SonarCloud
+    name: Static Code Analysis
     needs: build-artifact
-    uses: ./.github/workflows/security/static-code-scan.yml
+    uses: ./.github/workflows/static-code-scan.yml
     secrets:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -93,45 +44,11 @@ jobs:
   unit-tests:
     name: Unit Testing
     needs: static-code-analysis
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Dotnet
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 7.0.x
-
-      - name: Run Unit Tests
-        run: dotnet test src/hello-world-api
+    uses: ./.github/workflows/unit-test.yml
 
 # Performing Build, scan and push on same stage as we have to use the same runner.
   docker-build-scan-push:
     name: Docker Build, Scan and Push
     needs: unit-tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      # Package application into a container
-      - name: Build Docker Image
-        run: docker build -t poc-dotnet-app .
-
-      # Trivy scans container image for vulnerabilities
-      - name: Container Image Scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: poc-dotnet-app
-
-      # ensure image is not too large
-      - name: Image Size Validator
-        run: |
-          SIZE=$(docker image inspect poc-dotnet-app --format='{{.Size}}')
-          echo "Image Size: $SIZE bytes"
-
-     # push image to registry
-      - name: POC Image Push
-        run: echo "Image would be pushed to registry here"
-      # Azure Login and push to acr can be added here.
+    uses: ./ .github/workflows/docker-build-scan-push.yml
       

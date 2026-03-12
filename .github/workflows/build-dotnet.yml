@@ -1,0 +1,24 @@
+name: Build Artifact
+
+on:
+  workflow_call:
+
+jobs:
+  build-artifact:
+    name: Build Artifact
+    needs: [dependency-scan,credential-scan]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Restore Dependencies
+        run: dotnet restore src/hello-world-api
+
+      - name: Build Application
+        run: dotnet build src/hello-world-api --no-restore
