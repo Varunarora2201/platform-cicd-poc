@@ -50,5 +50,5 @@ jobs:
   docker-build-scan-push:
     name: Docker Build, Scan and Push
     needs: unit-tests
-    uses: ./ .github/workflows/docker-build-scan-push.yml
+    uses: ./.github/workflows/docker-build-scan-push.yml
       
