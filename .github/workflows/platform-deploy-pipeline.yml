@@ -1,0 +1,19 @@
+name: Deploy Application
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: POC Deployment
+        run: |
+          echo "Deploying application to environment..."
+          echo "This would normally deploy the container image"
+      # login to Azure and deploy the latest image of ACR.    

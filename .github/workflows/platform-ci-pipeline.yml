@@ -11,6 +11,7 @@ permissions:
 jobs:
 
   checkout:
+    name: Checkout
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -18,6 +19,7 @@ jobs:
 
 
   credential-scan:
+    name: Credentials scanning
     needs: checkout
     runs-on: ubuntu-latest
     steps:
@@ -27,6 +29,7 @@ jobs:
 
 
   dependency-scan:
+    name: Dependency Vulnerability Scanning
     needs: checkout
     runs-on: ubuntu-latest
     steps:
@@ -39,6 +42,7 @@ jobs:
 
 
   build-artifact:
+    name: Build Artifact
     needs: [dependency-scan,credential-scan]
     runs-on: ubuntu-latest
 
@@ -58,6 +62,7 @@ jobs:
 
 
   static-code-analysis:
+    name: Static Code Analysis
     needs: build-artifact
     runs-on: ubuntu-latest
 
@@ -77,6 +82,7 @@ jobs:
 
 
   unit-tests:
+    name: Unit Testing
     needs: static-code-analysis
     runs-on: ubuntu-latest
 
@@ -91,8 +97,9 @@ jobs:
       - name: Run Unit Tests
         run: dotnet test src/hello-world-api
 
-
-  docker-build:
+# Performing Build, scan and push on same stage as we have to use the same runner.
+  docker-build-scan-push:
+    name: Docker Build, Scan and Push
     needs: unit-tests
     runs-on: ubuntu-latest
 
@@ -115,5 +122,7 @@ jobs:
           echo "Image Size: $SIZE bytes"
 
 
-      - name: Simulated Image Push
+      - name: POC Image Push
         run: echo "Image would be pushed to registry here"
+      # Azure Login and push to acr can be added here.
+      
