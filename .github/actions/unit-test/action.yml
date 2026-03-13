@@ -9,6 +9,12 @@ runs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 7.0.x
+        
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dotnet-build-artifact
+        path: build
 
     - name: Run Unit Tests (POC)
       run: |

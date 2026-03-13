@@ -4,6 +4,11 @@ description: Build container image and scan it for vulnerabilities
 runs:
   using: composite
   steps:
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dotnet-build-artifact
+        path: build
 
     - name: Build Docker Image
       run: docker build -t poc-dotnet-app .
